@@ -1,8 +1,8 @@
 import sys
-t=int(sys.stdin.readline())
+t=int(input())
 for _ in range(t):
     n = int(input())
-    data = [list(map(int,sys.stdin.readline().split())) for _ in range(2)]
+    data = [list(map(int,input().split())) for _ in range(2)]
     for i in range(1,n):
         if i == 1:
             data[0][i] = data[1][0] + data[0][i]
