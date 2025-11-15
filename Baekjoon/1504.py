@@ -1,42 +1,56 @@
 import sys
 import heapq
 
-n,m = map(int,sys.stdin.readline().split())
-nodes = [list() for _ in range(n+1)]
-for _ in range(m):
-    a,b,c = map(int,sys.stdin.readline().split())
-    nodes[a].append((c,b))
+input = sys.stdin.readline
 
-K = 3
-dist = [[100000]*K for _ in range(n+1)]
-dist[1][0] = 0
-visited = set(map(int,sys.stdin.readline().split()))
-queue = []
-start = 1 if 1 in visited else 0
-heapq.heapify(queue)
-heapq.heappush(queue,(0,1,start))
-check = True
-while queue:
-    a,b,c= heapq.heappop(queue)
-    if a != dist[b][c]:
-        continue
-    if b == n:
-        if c == 2:
-            print(a)
-            check = False
-            break
-        else:
-            continue
-    for node in nodes[b]:
-        temp = 0
-        q,w = node
-        if b == w:
-            continue
-        if w in visited:
-            temp = 1
-        if a+q < dist[w][c+temp]:
-            dist[w][c+temp] = a+q
-            heapq.heappush(queue,(a+q,w,c+temp))
+INF = sys.maxsize
 
-if check:
+def dijkstra(start_node):
+
+    distance = [INF] * (N + 1)
+    
+    pq = []
+    
+    heapq.heappush(pq, (0, start_node))
+    distance[start_node] = 0
+    
+    while pq:
+        dist, now = heapq.heappop(pq)
+        
+        if distance[now] < dist:
+            continue
+            
+        for neighbor, weight in graph[now]:
+            cost = dist + weight
+            if cost < distance[neighbor]:
+                distance[neighbor] = cost
+                heapq.heappush(pq, (cost, neighbor))
+                
+    return distance
+
+
+N, E = map(int, input().split())
+
+graph = [[] for _ in range(N + 1)]
+
+for _ in range(E):
+    a, b, c = map(int, input().split())
+    graph[a].append((b, c))
+    graph[b].append((a, c))
+
+v1, v2 = map(int, input().split())
+
+dist_from_1 = dijkstra(1)
+dist_from_v1 = dijkstra(v1)
+dist_from_v2 = dijkstra(v2)
+
+path1 = dist_from_1[v1] + dist_from_v1[v2] + dist_from_v2[N]
+
+path2 = dist_from_1[v2] + dist_from_v2[v1] + dist_from_v1[N]
+
+result = min(path1, path2)
+
+if result >= INF:
     print(-1)
+else:
+    print(result)
